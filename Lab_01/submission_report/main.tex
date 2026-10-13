@@ -32,7 +32,7 @@
     keywordstyle=\color{blue}\bfseries,
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\scriptsize,
+    basicstyle=\ttfamily\scriptsize\linespread{0.86}\selectfont,
     breaklines=true,                 
     numbers=left,                    
     numbersep=5pt,                  
@@ -49,7 +49,7 @@
 \begin{document}
 
 % ==============================================================================
-% COVER PAGE
+% COVER PAGE (PAGE 1)
 % ==============================================================================
 \begin{titlepage}
     % Page Border using TikZ
@@ -107,7 +107,7 @@
 \pagenumbering{arabic}
 
 % ==============================================================================
-% SECTION 1: PROBLEM STATEMENT & OBJECTIVES
+% PAGE 2: SECTIONS 1 & 2
 % ==============================================================================
 \section*{1. Problem Statement and Objectives}
 \noindent\rule{\textwidth}{0.5pt}\vspace{0.2cm}
@@ -131,9 +131,6 @@ Short Message Service (SMS) spam is an ongoing security and user experience chal
 \noindent\textbf{GitHub Repository Link:}\\
 \href{https://github.com/Masud744/AI-ML-Lab/tree/main/Lab_01}{\texttt{https://github.com/Masud744/AI-ML-Lab/tree/main/Lab\_01}}\vspace{0.4cm}
 
-% ==============================================================================
-% SECTION 2: MATHEMATICAL FOUNDATION
-% ==============================================================================
 \section*{2. Mathematical Background of Naive Bayes}
 \noindent\rule{\textwidth}{0.5pt}\vspace{0.2cm}
 
@@ -163,45 +160,54 @@ where $N_{c,i}$ is the count of word $w_i$ in class $c$, $N_c$ is the total coun
 \newpage
 
 % ==============================================================================
-% SECTION 3: METHODOLOGY AND IMPLEMENTATION
+% PAGE 3: SECTION 3 (METHODOLOGY & PREPROCESSING)
 % ==============================================================================
 \section*{3. Methodology and Preprocessing Pipeline}
 \noindent\rule{\textwidth}{0.5pt}\vspace{0.2cm}
 
-\noindent\textbf{Dataset Overview:}\\
+\noindent
+\begin{minipage}[t]{0.52\textwidth}
+\textbf{Dataset Overview:}\\
 The experiment uses the SMS Spam Collection dataset, containing $5,572$ labeled text messages. As typical in real-world spam detection datasets, the classes are imbalanced:
 \begin{itemize}
     \item \textbf{Ham (Legitimate):} $4,825$ messages ($86.6\%$)
     \item \textbf{Spam (Unwanted):} $747$ messages ($13.4\%$)
 \end{itemize}
 
-\vspace{0.1cm}
-\noindent\textbf{Text Preprocessing Steps:}
+\vspace{0.15cm}
+\textbf{Text Preprocessing Steps:}
 \begin{enumerate}
-    \item \textbf{Case Folding:} All characters were converted to lowercase so that words like \texttt{Free}, \texttt{FREE}, and \texttt{free} are treated as the same token.
-    \item \textbf{Punctuation and Digit Removal:} Special symbols, punctuation marks, and digits were stripped to reduce noise in the vocabulary.
+    \item \textbf{Case Folding:} All characters were converted to lowercase so that words like \texttt{Free}, \texttt{FREE}, and \texttt{free} are treated as identical tokens.
+    \item \textbf{Punctuation and Digit Removal:} Special symbols, punctuation marks, and digits were stripped to reduce vocabulary noise.
     \item \textbf{Whitespace Cleanup:} Consecutive whitespace characters were condensed into single spaces.
 \end{enumerate}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{screenshots/class_distribution.png}
+    \captionof{figure}{SMS Class Distribution ($N = 5,572$)}
+\end{minipage}
 
-\vspace{0.1cm}
+\vspace{0.4cm}
 \noindent\textbf{Feature Extraction and Model Fitting:}
 \begin{itemize}
-    \item The preprocessed messages were partitioned using an \textbf{80-20 stratified split} ($4,457$ training records and $1,115$ testing records), preserving the original class distribution in both sets.
+    \item The preprocessed messages were partitioned using an \textbf{80-20 stratified split} ($4,457$ training records and $1,115$ testing records), preserving the class distribution across both sets.
     \item \texttt{CountVectorizer} was fit on the training split to produce Bag-of-Words feature vectors, discovering a vocabulary of $6,830$ unique words.
-    \item A \texttt{MultinomialNB} model was trained on the vector representations.
+    \item A \texttt{MultinomialNB(alpha=1.0)} model was trained on the vectorized representations.
 \end{itemize}
 
-\vspace{0.3cm}
+\newpage
 
 % ==============================================================================
-% SECTION 4: EXPERIMENTAL RESULTS
+% PAGE 4: SECTION 4 (EXPERIMENTAL RESULTS & EVALUATION)
 % ==============================================================================
 \section*{4. Experimental Results and Analysis}
 \noindent\rule{\textwidth}{0.5pt}\vspace{0.2cm}
 
 The trained classifier was evaluated on the $1,115$ holdout test messages ($966$ ham, $149$ spam). The overall performance metrics are summarized below:
 
-\vspace{0.2cm}
+\vspace{0.15cm}
 \begin{center}
 \begin{tabular}{lcccc}
 \toprule
@@ -215,33 +221,31 @@ Spam & 0.98 & 0.91 & 0.94 & 149 \\
 \end{tabular}
 \end{center}
 
-\vspace{0.2cm}
-\begin{figure}[htbp]
-\centering
+\vspace{0.25cm}
+\noindent
 \begin{minipage}[b]{0.48\textwidth}
     \centering
-    \includegraphics[width=0.88\linewidth]{screenshots/class_distribution.png}
-    \caption{Dataset Class Distribution ($N = 5,572$)}
+    \includegraphics[width=0.92\linewidth]{screenshots/confusion_matrix.png}
+    \captionof{figure}{Confusion Matrix on Test Split}
 \end{minipage}
 \hfill
 \begin{minipage}[b]{0.48\textwidth}
     \centering
-    \includegraphics[width=0.88\linewidth]{screenshots/confusion_matrix.png}
-    \caption{Confusion Matrix on Test Split ($N = 1,115$)}
+    \includegraphics[width=0.92\linewidth]{screenshots/metrics_chart.png}
+    \captionof{figure}{Performance Metrics Summary}
 \end{minipage}
-\end{figure}
 
-\vspace{0.1cm}
+\vspace{0.35cm}
 \noindent\textbf{Analysis of Results:}
 \begin{itemize}
-    \item \textbf{False Positives:} Out of $966$ legitimate messages in the test set, only $3$ messages ($0.3\%$) were mistakenly classified as spam. This gives a spam precision of $97.83\%$. In email and SMS filtering, avoiding false positives is critical because legitimate messages should rarely be lost to spam filters.
+    \item \textbf{False Positives:} Out of $966$ legitimate messages in the test set, only $3$ messages ($0.3\%$) were mistakenly classified as spam. This yields a spam precision of $97.83\%$, ensuring legitimate communications are rarely blocked.
     \item \textbf{False Negatives:} Out of $149$ actual spam messages, $14$ were misclassified as ham (giving a recall of $90.60\%$). These typically consist of very brief messages or texts without standard spam promotion terms.
 \end{itemize}
 
 \newpage
 
 % ==============================================================================
-% SECTION 5: TEST QUERY INFERENCE
+% PAGE 5: SECTIONS 5 & 6 (TEST QUERY & CONCLUSION)
 % ==============================================================================
 \section*{5. Evaluation on Assigned Test Query}
 \noindent\rule{\textwidth}{0.5pt}\vspace{0.2cm}
@@ -251,7 +255,7 @@ As specified in the lab problem, the model was tested on the following incoming 
     \textbf{``Congratulations! You have won a free ticket. Call now!''}
 \end{center}
 
-\vspace{0.1cm}
+\vspace{0.15cm}
 \noindent\textbf{Prediction Pipeline Details:}
 \begin{enumerate}
     \item \textbf{Input Preprocessing:} The message was cleaned to:
@@ -270,11 +274,8 @@ As specified in the lab problem, the model was tested on the following incoming 
 \noindent\textbf{Interpretation:}\\
 Because the message contains several strong advertising and incentive keywords that rarely appear in legitimate daily communications, the posterior probability for the spam class is near $100\%$. The classifier correctly identifies the message as spam.
 
-\vspace{0.4cm}
+\vspace{0.5cm}
 
-% ==============================================================================
-% SECTION 6: DISCUSSION AND CONCLUSION
-% ==============================================================================
 \section*{6. Discussion and Conclusion}
 \noindent\rule{\textwidth}{0.5pt}\vspace{0.2cm}
 
@@ -284,12 +285,10 @@ Because the message contains several strong advertising and incentive keywords t
     \item \textbf{Summary:} All tasks outlined in the lab problem were completed successfully. The dataset was preprocessed, vectorized, and trained using Multinomial Naive Bayes, and the specific query was accurately classified as spam.
 \end{itemize}
 
-\vspace{0.4cm}
-
 \newpage
 
 % ==============================================================================
-% SECTION 7: SOURCE CODE LISTING
+% PAGES 6 & 7: SECTION 7 (SOURCE CODE LISTING)
 % ==============================================================================
 \section*{7. Python Source Code Listing (\texttt{spam\_classifier.py})}
 \noindent\rule{\textwidth}{0.5pt}\vspace{0.2cm}

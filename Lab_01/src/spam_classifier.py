@@ -5,14 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics import (
-    accuracy_score,
-    classification_report,
-    confusion_matrix,
-    f1_score,
-    precision_score,
-    recall_score,
-)
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 
@@ -27,8 +20,9 @@ def preprocess_text(text):
     return text
 
 
-def plot_visuals(df, y_test, y_pred, output_dir):
+def plot_visuals(df, y_test, y_pred, output_dir, metrics):
     os.makedirs(output_dir, exist_ok=True)
+    acc, prec, rec, f1 = metrics
 
     # 1. Class Distribution
     plt.figure(figsize=(5, 3.8))
@@ -71,6 +65,22 @@ def plot_visuals(df, y_test, y_pred, output_dir):
     plt.savefig(os.path.join(output_dir, "confusion_matrix.png"), dpi=300, bbox_inches="tight")
     plt.close()
 
+    # 3. Performance Metrics Bar Chart
+    plt.figure(figsize=(4.8, 3.8))
+    names = ["Accuracy", "Precision", "Recall", "F1-Score"]
+    vals = [acc * 100, prec * 100, rec * 100, f1 * 100]
+    bars = plt.bar(names, vals, color=["#1f77b4", "#2ca02c", "#ff7f0e", "#9467bd"], width=0.5, edgecolor="black")
+    plt.title("Performance Metrics (Spam Class)", fontsize=11, fontweight="bold", pad=12)
+    plt.ylabel("Score (%)", fontsize=10)
+    plt.ylim(0, 115)
+    plt.grid(axis="y", linestyle="--", alpha=0.5)
+    for bar in bars:
+        h = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, h + 2, f"{h:.2f}%", ha="center", va="bottom", fontsize=8.5)
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "metrics_chart.png"), dpi=300, bbox_inches="tight")
+    plt.close()
+
 
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -87,11 +97,7 @@ def main():
 
     # Train-test split (80% train, 20% test)
     X_train, X_test, y_train, y_test = train_test_split(
-        df["clean_message"],
-        df["label"],
-        test_size=0.20,
-        random_state=42,
-        stratify=df["label"],
+        df["clean_message"], df["label"], test_size=0.20, random_state=42, stratify=df["label"]
     )
 
     # Text vectorization using Bag of Words
@@ -126,7 +132,7 @@ def main():
     print(f"--- Test Query Prediction ---\nInput text : {test_message}\nPrediction : {prediction.upper()}\nProbability: Ham = {probabilities[ham_idx] * 100:.2f}%, Spam = {probabilities[spam_idx] * 100:.2f}%")
 
     # Save visual plots for report
-    plot_visuals(df, y_test, y_pred, output_dir)
+    plot_visuals(df, y_test, y_pred, output_dir, (acc, prec, rec, f1))
     print("\nPlots saved to screenshots directory successfully.")
 
 
