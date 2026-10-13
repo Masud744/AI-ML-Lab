@@ -1,0 +1,308 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{caption}
+
+% Hyperlink configuration
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    pdftitle={AI and ML Sessional Lab Report 1},
+    pdfauthor={Shahriar Alom Masud}
+}
+
+% Python syntax highlighting configuration
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{blue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\scriptsize,
+    breaklines=true,                 
+    numbers=left,                    
+    numbersep=4pt,                  
+    tabsize=4,
+    frame=single,
+    rulecolor=\color{lightgray},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false
+}
+
+\lstset{style=pythonstyle}
+
+\begin{document}
+
+% ==============================================================================
+% COVER PAGE
+% ==============================================================================
+\begin{titlepage}
+    % Page Border using TikZ
+    \begin{tikzpicture}[remember picture, overlay]
+        \draw[line width=1.2pt] 
+            ([shift={(1.2cm,-1.2cm)}]current page.north west) 
+            rectangle 
+            ([shift={(-1.2cm,1.2cm)}]current page.south east);
+        \draw[line width=0.5pt] 
+            ([shift={(1.32cm,-1.32cm)}]current page.north west) 
+            rectangle 
+            ([shift={(-1.32cm,1.32cm)}]current page.south east);
+    \end{tikzpicture}
+
+    \centering
+    \vspace*{0.4cm}
+
+    % University Crest & Header
+    \includegraphics[width=3.6cm]{screenshots/uftb_logo.png}\\[0.4cm]
+    {\normalsize \textbf{UNIVERSITY OF FRONTIER TECHNOLOGY, BANGLADESH}}\\[0.16cm]
+    {\footnotesize \textbf{DEPARTMENT OF INTERNET OF THINGS AND ROBOTICS ENGINEERING (IRE)}}\\[0.14cm]
+    {\footnotesize FACULTY OF CYBER PHYSICAL SYSTEM ENGINEERING}\\[0.55cm]
+
+    % Divider Rule
+    \noindent\rule{0.88\textwidth}{0.85pt}\\[0.85cm]
+
+    % Header Title (Lab Topic)
+    {\large \textbf{LAB REPORT 01}}\\[0.25cm]
+    {\normalsize \textbf{SMS SPAM DETECTION USING NAIVE BAYES CLASSIFIER}}\\[0.85cm]
+
+    % Course Code & Title
+    {\normalsize \textbf{COURSE CODE: AI 484}}\\[0.18cm]
+    {\normalsize \textbf{COURSE TITLE: ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING SESSIONAL}}\\[1.0cm]
+
+    % Student Info
+    {\small \textbf{\underline{SUBMITTED BY:}}}\\[0.22cm]
+    {\large \textbf{Shahriar Alom Masud}}\\[0.14cm]
+    {\small Student ID: \textbf{2201032} \quad $\vert$ \quad Session: 2022--2023}\\[0.1cm]
+    {\footnotesize Department of Internet of Things and Robotics Engineering (IRE), UFTB}\\[0.95cm]
+
+    % Instructor Info
+    {\small \textbf{\underline{SUBMITTED TO:}}}\\[0.22cm]
+    {\large \textbf{Suman Saha}}\\[0.14cm]
+    {\small Assistant Professor}\\[0.1cm]
+    {\footnotesize Department of Internet of Things and Robotics Engineering (IRE)}\\[0.08cm]
+    {\footnotesize University of Frontier Technology, Bangladesh}
+
+    % University & Date Details
+    \vfill
+    {\footnotesize OCTOBER 13, 2026}
+    \vspace*{0.3cm}
+\end{titlepage}
+
+\newpage
+\pagenumbering{arabic}
+
+% ==============================================================================
+% SECTION 1: PROBLEM STATEMENT & TASKS
+% ==============================================================================
+\section*{1. Lab Problem \& Objectives}
+\noindent\rule{\textwidth}{0.6pt}\vspace{0.15cm}
+
+\noindent\textbf{Problem Statement:}\\
+Given the SMS Spam Collection dataset, how can you use the Naive Bayes classifier to automatically detect whether an incoming SMS is spam or not?
+
+\vspace{0.2cm}
+\noindent\textbf{Key Objectives \& Assigned Tasks:}
+\begin{enumerate}
+    \item \textbf{Dataset Acquisition \& Loading:} Load the standard SMS Spam Collection dataset into a structured tabular format.
+    \item \textbf{Text Preprocessing \& Vectorization:} Clean textual content (lowercasing, punctuation and numerical removal) and extract numerical representations via Count Vectorization (Bag-of-Words).
+    \item \textbf{Model Formulation \& Training:} Train a Multinomial Naive Bayes classifier ($MultinomialNB$) on stratified train-test splits to learn statistical boundaries separating spam from ham.
+    \item \textbf{Performance Evaluation:} Evaluate the trained model on unseen test samples and determine Accuracy, Precision, Recall, F1-Score, and the Confusion Matrix.
+    \item \textbf{Novel Sample Inference:} Predict whether the incoming message:
+    \begin{center}
+        \textit{``Congratulations! You have won a free ticket. Call now!''}
+    \end{center}
+    is classified as spam or ham, along with posterior confidence scores.
+\end{enumerate}
+
+\noindent\textbf{GitHub Repository Link:}\\
+\href{https://github.com/Masud744/AI-ML-Lab/tree/main/Lab_01}{\texttt{https://github.com/Masud744/AI-ML-Lab/tree/main/Lab\_01}}\vspace{0.3cm}
+
+% ==============================================================================
+% SECTION 2: MATHEMATICAL FOUNDATION
+% ==============================================================================
+\section*{2. Mathematical Formulation of Naive Bayes}
+\noindent\rule{\textwidth}{0.6pt}\vspace{0.15cm}
+
+The Naive Bayes classifier is a probabilistic machine learning algorithm grounded in \textbf{Bayes' Theorem}. Given an SMS message represented as a vector of word tokens $\mathbf{x} = (w_1, w_2, \dots, w_n)$, the posterior probability of the message belonging to class $C_k \in \{\text{ham}, \text{spam}\}$ is given by:
+
+\begin{equation}
+    P(C_k \mid \mathbf{x}) = \frac{P(C_k) \cdot P(\mathbf{x} \mid C_k)}{P(\mathbf{x})}
+\end{equation}
+
+Assuming the conditional independence of words given the class label:
+\begin{equation}
+    P(\mathbf{x} \mid C_k) = \prod_{i=1}^{n} P(w_i \mid C_k)
+\end{equation}
+
+The classification decision rule assigns the class that maximizes the posterior likelihood:
+\begin{equation}
+    \hat{y} = \arg\max_{C_k} P(C_k) \prod_{i=1}^{n} P(w_i \mid C_k)
+\end{equation}
+
+To avoid the zero-frequency problem where an unseen word forces the entire likelihood product to zero, \textbf{Laplace Smoothing} ($\alpha = 1$) is employed:
+\begin{equation}
+    P(w_i \mid C_k) = \frac{N_{k, i} + \alpha}{N_k + \alpha \cdot |V|}
+\end{equation}
+where $N_{k,i}$ is the count of word $w_i$ in class $C_k$, $N_k$ is the total count of words in class $C_k$, and $|V|$ denotes the vocabulary size.
+
+\newpage
+
+% ==============================================================================
+% SECTION 3: METHODOLOGY & DATASET EXPLORATION
+% ==============================================================================
+\section*{3. Methodology \& Implementation Architecture}
+\noindent\rule{\textwidth}{0.6pt}\vspace{0.15cm}
+
+\noindent
+\begin{minipage}[t]{0.50\textwidth}
+\textbf{Dataset Exploration:}
+\vspace{0.1cm}
+
+The SMS Spam Collection consists of $5,572$ tagged SMS messages. The distribution reflects standard real-world imbalance:
+\begin{itemize}
+    \item \textbf{Legitimate (Ham):} $4,825$ messages ($86.6\%$)
+    \item \textbf{Unsolicited (Spam):} $747$ messages ($13.4\%$)
+\end{itemize}
+
+\vspace{0.2cm}
+\textbf{Pipeline Stages:}
+\begin{enumerate}
+    \item \textbf{Text Normalization:} Converting messages to lowercase, stripping punctuation via translation tables, and eliminating numeric digits.
+    \item \textbf{Stratified Splitting:} An $80\%-20\%$ train-test split ($4,457$ training records, $1,115$ test records) maintaining identical class proportions across both splits.
+    \item \textbf{Bag-of-Words Vectorization:} Tokenizing corpus with \texttt{CountVectorizer}, resulting in a feature vocabulary of $7,537$ distinct unigrams.
+    \item \textbf{Model Training:} Fitting \texttt{MultinomialNB(alpha=1.0)}.
+\end{enumerate}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.46\textwidth}
+\begin{center}
+    \includegraphics[width=\textwidth]{screenshots/class_distribution.png}
+    \captionof{figure}{SMS Class Distribution ($N = 5,572$)}
+\end{center}
+\end{minipage}
+
+\vspace{0.4cm}
+
+% ==============================================================================
+% SECTION 4: EXPERIMENTAL RESULTS & EVALUATION
+% ==============================================================================
+\section*{4. Experimental Results \& Model Evaluation}
+\noindent\rule{\textwidth}{0.6pt}\vspace{0.15cm}
+
+The trained classifier was evaluated on $1,115$ unseen test messages ($966$ ham, $149$ spam). The experimental metrics confirm strong discriminative capability:
+
+\vspace{0.2cm}
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+\textbf{Performance Summary Table:}
+\vspace{0.15cm}
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{Spam Class} & \textbf{Overall} \\
+\midrule
+\textbf{Accuracy}  & -- & \textbf{98.21\%} \\
+\textbf{Precision} & \textbf{97.78\%} & 98.00\% \\
+\textbf{Recall}    & \textbf{88.59\%} & 94.00\% \\
+\textbf{F1-Score}  & \textbf{92.96\%} & 96.00\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.25cm}
+\textbf{Observations on Misclassification:}
+\begin{itemize}
+    \item \textbf{False Positives:} Only $3$ legitimate messages ($0.31\%$) were incorrectly flagged as spam, demonstrating exceptional precision ($97.78\%$).
+    \item \textbf{False Negatives:} $17$ spam messages were missed due to short length or colloquial phrasing lacking typical spam keywords.
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{center}
+    \includegraphics[width=0.92\textwidth]{screenshots/confusion_matrix.png}
+    \captionof{figure}{Confusion Matrix on Test Set}
+\end{center}
+\end{minipage}
+
+\vspace{0.2cm}
+\begin{center}
+    \includegraphics[width=0.72\textwidth]{screenshots/metrics_chart.png}
+    \captionof{figure}{Performance Metrics Summary for Spam Detection}
+\end{center}
+
+\newpage
+
+% ==============================================================================
+% SECTION 5: INFERENCE ON TEST QUERY
+% ==============================================================================
+\section*{5. Inference on Assigned Test Query}
+\noindent\rule{\textwidth}{0.6pt}\vspace{0.15cm}
+
+The laboratory task required testing the model against the unseen prompt:
+\begin{center}
+    \textbf{``Congratulations! You have won a free ticket. Call now!''}
+\end{center}
+
+\vspace{0.15cm}
+\noindent\textbf{Execution \& Prediction Pipeline:}
+\begin{enumerate}
+    \item \textbf{Raw Input:} \texttt{"Congratulations! You have won a free ticket. Call now!"}
+    \item \textbf{Cleaned Token Sequence:} \texttt{"congratulations you have won a free ticket call now"}
+    \item \textbf{Vectorized Representation:} Transformed through the fitted vocabulary, matching high-frequency spam trigger unigrams: \texttt{"congratulations"}, \texttt{"won"}, \texttt{"free"}, \texttt{"ticket"}, \texttt{"call"}, \texttt{"now"}.
+    \item \textbf{Model Output Class:} \textbf{\large \textcolor{red}{SPAM}}
+    \item \textbf{Class Probability Distribution:}
+    \begin{itemize}
+        \item $P(\text{Spam} \mid \text{Message}) = \mathbf{99.9868\%}$
+        \item $P(\text{Ham} \mid \text{Message}) = \mathbf{0.0132\%}$
+    \end{itemize}
+\end{enumerate}
+
+\noindent\textbf{Result Analysis:}\\
+The high concentration of marketing, prize solicitation, and urgency terms yielded a conditional probability overwhelmingly favoring the spam class ($>99.98\%$). The model successfully and decisively identified the malicious nature of the message.
+
+\vspace{0.5cm}
+
+% ==============================================================================
+% SECTION 6: DISCUSSION & CONCLUSION
+% ==============================================================================
+\section*{6. Discussion \& Conclusion}
+\noindent\rule{\textwidth}{0.6pt}\vspace{0.15cm}
+
+\begin{itemize}
+    \item \textbf{Algorithmic Efficiency:} Multinomial Naive Bayes demonstrates exceptional computational efficiency during both training and inference, completing feature transformations and model fitting across over $5,500$ records in sub-second intervals.
+    \item \textbf{Precision vs. Recall Trade-off:} In SMS spam filtering, precision is paramount; false positives (labeling critical legitimate messages as spam) are significantly more detrimental to user experience than occasionally allowing spam through. Achieving a $97.78\%$ spam precision satisfies this practical engineering requirement.
+    \item \textbf{Conclusion:} The experiment validated the efficacy of the Naive Bayes algorithm in processing textual data for binary classification. The pipeline successfully ingested the SMS Spam Collection dataset, completed end-to-end preprocessing, achieved an overall accuracy of $98.21\%$, and correctly flagged the test query with extreme certainty.
+\end{itemize}
+
+\vspace{0.5cm}
+
+\newpage
+
+% ==============================================================================
+% SECTION 7: SOURCE CODE LISTING
+% ==============================================================================
+\section*{7. Python Source Code Listing (\texttt{spam\_classifier.py})}
+\noindent\rule{\textwidth}{0.6pt}\vspace{0.15cm}
+
+\noindent\textbf{GitHub Repository File:}\\
+\href{https://github.com/Masud744/AI-ML-Lab/blob/main/Lab_01/src/spam_classifier.py}{\texttt{https://github.com/Masud744/AI-ML-Lab/blob/main/Lab\_01/src/spam\_classifier.py}}\vspace{0.25cm}
+
+\lstinputlisting[language=Python]{../src/spam_classifier.py}
+
+\end{document}
