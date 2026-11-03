@@ -17,6 +17,7 @@ Instructor: Suman Saha, Assistant Professor, Dept. of IRE, UFTB
 | Lab No. | Topic / Problem Statement | Algorithm / Model | Status | Report Link |
 | :---: | :--- | :--- | :---: | :---: |
 | Lab 01 | [SMS Spam Detection](Lab_01/) | Multinomial Naive Bayes | Completed | [2201032_Report_1.pdf](Lab_01/submission_report/2201032_Report_1.pdf) |
+| Lab 04 | [Breast Cancer Classification](Lab_04/) | Ensemble Learning (Bagging, Boosting, Stacking, Random Forest) | Completed | [2201032_Report_4.pdf](Lab_04/submission_report/2201032_Report_4.pdf) |
 
 ---
 

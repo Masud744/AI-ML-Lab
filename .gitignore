@@ -43,3 +43,8 @@ ENV/
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Agent Custom Instructions & Skills
+.agents/
+GEMINI.md
+
